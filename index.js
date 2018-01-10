@@ -15,11 +15,11 @@ const _ = require('underscore'),
     _.mergeDefaults = mergeDefaults;
 
     function favicons (source, parameters, next) {
+        const clonedParameters = clone(parameters);
 
         const config = clone(configDefaults),
-            options = _.mergeDefaults(parameters || {}, config.defaults),
-            µ = helpers(options);
-
+             options = Object.assign(config, clonedParameters),
+             µ = helpers(options);
         function createFavicon (sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
                 async.map(
@@ -79,7 +79,7 @@ const _ = require('underscore'),
         function createHTML (platform, callback) {
             const html = [];
 
-            async.forEachOf(config.html[platform], (tag, selector, cb) =>
+            async.forEachOf(options.html[platform], (tag, selector, cb) =>
                 µ.HTML.parse(tag, (error, metadata) =>
                     cb(html.push(metadata) && error)),
             (error) =>
