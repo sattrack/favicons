@@ -18,8 +18,9 @@ const _ = require('underscore'),
         const clonedParameters = clone(parameters);
 
         const config = clone(configDefaults),
-             options = Object.assign(config, clonedParameters),
-             µ = helpers(options);
+            options = _.mergeDefaults(parameters || {}, config.defaults),
+            µ = helpers(options);
+
         function createFavicon (sourceset, properties, name, platformOptions, callback) {
             if (path.extname(name) === '.ico') {
                 async.map(
@@ -79,7 +80,7 @@ const _ = require('underscore'),
         function createHTML (platform, callback) {
             const html = [];
 
-            async.forEachOf(options.html[platform], (tag, selector, cb) =>
+            async.forEachOf(config.html[platform], (tag, selector, cb) =>
                 µ.HTML.parse(tag, (error, metadata) =>
                     cb(html.push(metadata) && error)),
             (error) =>
